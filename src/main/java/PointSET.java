@@ -1,115 +1,123 @@
-/**
- * Description: Represents a set of points in the unit square
- * (all points have x- and y-coordinates between 0 and 1)
- * using <code>algs4.Point2D</code> to represent a point,
- * <code>algs4.RectHV</code> to represent a rectangle,
- * a red-black BST (used in <code>algs4.SET</code> or <code>java.util.TreeSet</code>)
- * to support range search (find all the points contained in a query rectangle)
- * and nearest-neighbor search (find a closest point to a query point).
- * <p>
- * This is the brute-force implementation using a Red-Black BST.
- */
-
 import edu.princeton.cs.algs4.Point2D;
 import edu.princeton.cs.algs4.RectHV;
 import edu.princeton.cs.algs4.StdDraw;
 import edu.princeton.cs.algs4.SET;
 
 import java.util.ArrayList;
-import java.util.TreeSet;
 
 public class PointSET {
 
-    /**
-     * An integer for the size of the canvas.
-     */
     private static final int CANVAS_SIZE = 640;
-
-    /**
-     * A double for the size of the pen radius.
-     */
     private static final double PEN_RADIUS = 0.01;
 
-    /**
-     * Constructs an empty set of points in the unit square.
-     */
+    // for storing points
+    private final SET<Point2D> points;
+
+    // Makes an empty set
     public PointSET() {
-        // TODO: your code here
+        points = new SET<>();
     }
 
-    /**
-     * Returns true if the set is empty.
-     * @return whether the set is empty
-     */
+    // Checks if empty
     public boolean isEmpty() {
-        // TODO: your code here
-        return false;
+        return points.isEmpty();
     }
 
-    /**
-     * Returns the number of points in the set.
-     * @return the number of points in the set
-     */
+    // How many points we have
     public int size() {
-        // TODO: your code here
-        return 0;
+        return points.size();
     }
 
-    /**
-     * Adds the point to the set (if not already in the set).
-     * @param p the point to be inserted
-     * @throws IllegalArgumentException if p is null
-     */
+    // adds a point if it's not already there
     public void insert(Point2D p) {
-        // TODO: your code here
+        if (p == null) {
+            throw new IllegalArgumentException("boaa null point :joy: :sob:");
+        }
+
+        points.add(p);
     }
 
-    /**
-     * Returns true if the set contains point p.
-     * @param p the point to be checked for
-     * @return true if the set contains point p
-     * @throws IllegalArgumentException if p is null
-     */
+    // Checks if the point exists
     public boolean contains(Point2D p) {
-        // TODO: your code here
-        return false;
+        if (p == null) {
+            throw new IllegalArgumentException("kant look for ts null point :sob:");
+        }
+
+        return points.contains(p);
     }
 
-    /**
-     * Draws all points to standard draw.
-     */
+    // Draws all the points
     public void draw() {
-        // TODO: your code here - feel free to modify what is here
         StdDraw.setCanvasSize(CANVAS_SIZE, CANVAS_SIZE);
         StdDraw.setPenRadius(PEN_RADIUS);
+        StdDraw.setPenColor(StdDraw.BLACK);
+
+        for (Point2D p : points) {
+            p.draw();
+        }
     }
 
-    /**
-     * Returns all the points that are inside the rectangle.
-     * @param rect the rectangle
-     * @return all the points that are inside the rectangle
-     * @throws IllegalArgumentException if rect is null
-     */
+    // Gets points inside the rectangle
     public Iterable<Point2D> range(RectHV rect) {
-        // TODO: your code here
-        return new ArrayList<>();
+        if (rect == null) {
+            throw new IllegalArgumentException("rectangle kant be null");
+        }
+
+        ArrayList<Point2D> pointsInRange = new ArrayList<>();
+
+        for (Point2D p : points) {
+            if (rect.contains(p)) {
+                pointsInRange.add(p);
+            }
+        }
+
+        return pointsInRange;
     }
 
-    /**
-     * Returns a nearest neighbor in the set to point p; null if the set is empty.
-     * @param p the point to be checked
-     * @return a nearest neighbor in the set to point p; null if the set is empty
-     * @throws IllegalArgumentException if p is null
-     */
+    // Finds closest point to p
     public Point2D nearest(Point2D p) {
-        // TODO: your code here
-        return new Point2D(0.0, 0.0);
+        if (p == null) {
+            throw new IllegalArgumentException("ts point kant be null");
+        }
+
+        if (isEmpty()) {
+            return null;
+        }
+
+        Point2D nearest = null;
+        double minDistance = Double.POSITIVE_INFINITY;
+
+        for (Point2D point : points) {
+            double distance = p.distanceSquaredTo(point);
+
+            if (distance < minDistance) {
+                minDistance = distance;
+                nearest = point;
+            }
+        }
+
+        return nearest;
     }
 
-    /**
-     * Optional method for your testing.
-     * @param args the arguments
-     */
+    // Testing stuff
     public static void main(String[] args) {
+        PointSET set = new PointSET();
+
+        set.insert(new Point2D(0.2, 0.3));
+        set.insert(new Point2D(0.5, 0.5));
+        set.insert(new Point2D(0.7, 0.1));
+
+        System.out.println("how many: " + set.size());
+        System.out.println("has (0.5, 0.5): " + set.contains(new Point2D(0.5, 0.5)));
+        System.out.println("has (0.1, 0.1): " + set.contains(new Point2D(0.1, 0.1)));
+
+        RectHV rect = new RectHV(0.1, 0.1, 0.6, 0.6);
+        System.out.println("points in box: ");
+        for (Point2D p : set.range(rect)) {
+            System.out.println(p);
+        }
+
+        Point2D query = new Point2D(0.6, 0.6);
+        System.out.println("closest to " + query + ": " + set.nearest(query));
     }
 }
